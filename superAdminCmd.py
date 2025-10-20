@@ -267,7 +267,6 @@ class SuperAdminCmd(commands.Cog):
             json.dump(config, f, indent=4)
 
         # Send welcome message in the channel
-        await ctx.send(WELCOME_MESSAGE)
         await ctx.send("Welcome channel set to this channel.")
 
     @commands.command(name='setRole')

@@ -96,10 +96,13 @@ async def on_ready():
     SUPER_ADMIN_ROLE_ID = infos.get("super_admin_role")
     MEMBER_ROLE_ID = infos.get("member_roles", [])
 
-    # Load cogs
-    await memberCmd.setup(client)
-    await adminCmd.setup(client)
-    await superAdminCmd.setup(client)
+    # Load cogs if not already loaded
+    if not client.get_cog('MemberCmd'):
+        await memberCmd.setup(client)
+    if not client.get_cog('AdminCmd'):
+        await adminCmd.setup(client)
+    if not client.get_cog('SuperAdminCmd'):
+        await superAdminCmd.setup(client)
 
 @client.event
 async def on_member_join(member):
@@ -166,9 +169,25 @@ async def on_member_join(member):
         if welcome_channel_id:
             welcome_channel = member.guild.get_channel(welcome_channel_id)
             if welcome_channel:
-                await welcome_channel.send(f"{WELCOME_MESSAGE}\nWelcome {member.mention}!")
+                await welcome_channel.send(f"Welcome {member.mention} has joined the server!")
     except Exception as e:
         print(f"Error sending welcome message: {e}")
+
+    # Send rules to DM and personal channel
+    rules_message = f"Please send messages only using the command 'MM send [channel]' and only in your personal channel: #{user_id}"
+    try:
+        await member.send(rules_message)
+    except discord.HTTPException:
+        print(f"Could not send DM to {member}")
+
+    # Send rules to personal channel
+    if category:
+        channel = discord.utils.get(category.channels, name=user_id)
+        if channel:
+            try:
+                await channel.send(rules_message)
+            except Exception as e:
+                print(f"Error sending rules to personal channel for {member}: {e}")
 
     print(f"Generated ID for {member}: user_id={user_id}, role={role}, admin_id={admin_id}")
 
@@ -185,13 +204,8 @@ async def on_member_remove(member):
     if user_key in user_ids:
         data = user_ids[user_key]
         user_id = data if isinstance(data, str) else data.get("user_id")
-        del user_ids[user_key]
-        # Write back to file
-        with open(USER_IDS_FILE, 'w') as f:
-            json.dump(user_ids, f, indent=4)
-        print(f"Deleted data for {member}")
 
-        # Delete private channel
+        # Delete private channel first
         category = member.guild.get_channel(ALLOWED_CATEGORY_ID)
         if category and user_id:
             channel = discord.utils.get(category.channels, name=user_id)
@@ -201,6 +215,13 @@ async def on_member_remove(member):
                     print(f"Deleted private channel {user_id} for {member}")
                 except Exception as e:
                     print(f"Error deleting channel for {member}: {e}")
+
+        # Then delete the user's data
+        del user_ids[user_key]
+        # Write back to file
+        with open(USER_IDS_FILE, 'w') as f:
+            json.dump(user_ids, f, indent=4)
+        print(f"Deleted data for {member}")
 
 @client.event
 async def on_message(message):
