@@ -1,0 +1,2 @@
+- [x] Modify makeChannel command in adminCmd.py to allow members (and higher) if not asAdmin, require admin for asAdmin
+- [x] Add channel deletion in kick_user and ban_user commands in adminCmd.py

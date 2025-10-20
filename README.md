@@ -59,18 +59,6 @@ Create a `.env` file in the root directory of the project. This file should cont
 ```env
 # Discord Bot Token (required)
 DISCORD_TOKEN=your_discord_bot_token_here
-
-# Allowed Category ID (ID of the category where private channels are created)
-ALLOWED_CATEGORY_ID=123456789012345678
-
-# Allowed Role IDs (comma-separated list of role IDs that have admin privileges)
-ALLOWED_ROLE_ID=987654321098765432,876543210987654321
-
-# Super Admin Role ID (ID of the super admin role)
-SUPER_ADMIN_ID=112233445566778899
-
-# Member Role ID (ID of the member role)
-MEMBER_ROLE_ID=998877665544332211
 ```
 
 **Note:** Replace the placeholder values with your actual Discord server IDs and token. You can find these by enabling Developer Mode in Discord (User Settings > Advanced > Developer Mode), then right-clicking on roles, categories, etc., to copy their IDs.
@@ -86,26 +74,86 @@ python masker.py
 
 The bot will log in and be ready to respond to commands prefixed with `MM `.
 
+## Setup in Discord Server
+
+Before using the bot, you need to configure roles and categories in your Discord server. These commands must be run by someone with the appropriate permissions (Super Admin for initial setup).
+
+### Initial Setup Commands
+
+1. **Set Super Admin Role** (Anyone can run this if no super admin is set):
+   ```
+   MM setRole superAdmin <@SuperAdminRole>
+   ```
+   Example: `MM setRole superAdmin @SuperAdmin`
+
+2. **Set Admin Roles** (Super Admin only):
+   ```
+   MM setRole admin <@AdminRole1> <@AdminRole2> ...
+   ```
+   Example: `MM setRole admin @Admin @Moderator`
+
+3. **Set Member Roles** (Super Admin only):
+   ```
+   MM setRole member <@MemberRole1> <@MemberRole2> ...
+   ```
+   Example: `MM setRole member @Member @Verified`
+
+4. **Set Allowed Category** (Super Admin only):
+   ```
+   MM setAllowedCategory
+   ```
+   Run this command in the category where private user channels should be created.
+
+5. **Set Welcome Channel** (Super Admin only, optional):
+   ```
+   MM setWelcomeHere
+   ```
+   Run this command in the channel where welcome messages should be sent.
+
+### Additional Setup Commands (Super Admin only)
+
+- `MM addRole admin <@NewAdminRole>`: Add additional admin roles.
+- `MM addRole member <@NewMemberRole>`: Add additional member roles.
+- `MM removeFromRole admin <@RoleToRemove>`: Remove admin roles.
+- `MM removeFromRole member <@RoleToRemove>`: Remove member roles.
+
 ## Usage
 
 ### Commands
 
-- `MM send [asAdmin] <channel> <message>`: Send an anonymous message to a channel.
+#### General Commands (Available to all users)
 - `MM generateID`: Generate or retrieve your user ID and role.
-- `MM makeUser <user>`: Grant member role to a user (Admin only).
-- `MM warnUser <user>`: Warn a user (Admin only).
-- `MM kickUser <user>`: Kick a user (Admin only).
-- `MM banUser <user>`: Ban a user (Admin only).
-- `MM removeMemberRole <user>`: Remove member role from a user (Admin only).
-- `MM displayMemberRoleHistory`: Display role history (Admin only).
-- `MM purgeChannel [amount] [channel]`: Purge messages from a channel (Admin only).
-- `MM makeChannel <category> <channel> [voc] [adminOnly]`: Create a channel (Admin only).
-- `MM removeChannel <category> <channel>`: Remove a channel (Admin only).
-- `MM makeCategory <category> [adminOnly]`: Create a category (Super Admin only).
-- `MM removeCategory <category>`: Remove a category (Super Admin only).
-- `MM makeAdmin <user>`: Grant admin privileges (Super Admin only).
-- `MM removeAdmin <user>`: Remove admin privileges (Super Admin only).
 - `MM helpDisplay`: Display available commands based on your role.
+
+#### Member Commands (Members and above)
+- `MM send [asAdmin] <channel> <message>`: Send an anonymous message to a channel.
+
+#### Admin Only Commands
+- `MM makeUser <user>`: Grant member role to a user.
+- `MM warnUser <user>`: Warn a user.
+- `MM kickUser <user>`: Kick a user.
+- `MM banUser <user>`: Ban a user.
+- `MM removeMemberRole <user>`: Remove member role from a user.
+- `MM displayMemberRoleHistory`: Display role history.
+- `MM purgeChannel [amount] [channel]`: Purge messages from a channel.
+- `MM makeChannel <category> <channel> [voc] [adminOnly]`: Create a channel.
+- `MM removeChannel <category> <channel>`: Remove a channel.
+
+#### Super Admin Only Commands
+- `MM setRole superAdmin <@SuperAdminRole>`: Set the super admin role (initial setup).
+- `MM setRole admin <@AdminRole1> <@AdminRole2> ...`: Set admin roles.
+- `MM setRole member <@MemberRole1> <@MemberRole2> ...`: Set member roles.
+- `MM addRole admin <@NewAdminRole>`: Add additional admin roles.
+- `MM addRole member <@NewMemberRole>`: Add additional member roles.
+- `MM removeFromRole admin <@RoleToRemove>`: Remove admin roles.
+- `MM removeFromRole member <@RoleToRemove>`: Remove member roles.
+- `MM setAllowedCategory`: Set the allowed category for private channels.
+- `MM setWelcomeHere`: Set the welcome channel.
+- `MM makeCategory <category> [adminOnly]`: Create a category.
+- `MM removeCategory <category>`: Remove a category.
+- `MM makeAdmin <user>`: Grant admin privileges.
+- `MM removeAdmin <user>`: Remove admin privileges.
+- `MM displayAdminRoleHistory`: Display admin role history.
 
 ### Permissions
 
